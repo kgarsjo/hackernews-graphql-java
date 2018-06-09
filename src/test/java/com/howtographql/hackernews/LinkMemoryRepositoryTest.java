@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.*;
 
-public class LinkRepositoryTest {
+public class LinkMemoryRepositoryTest {
     private List<Link> initialList;
-    private LinkRepository linkRepository;
+    private LinkMemoryRepository linkRepository;
     
     @Before
     public void beforeEach() {
@@ -21,13 +21,13 @@ public class LinkRepositoryTest {
 
     @Test
     public void getAllLinksWithInitialListReturnsInitialList() {
-        linkRepository = new LinkRepository(initialList);
+        linkRepository = new LinkMemoryRepository(initialList);
         Assert.assertEquals(initialList, linkRepository.getAllLinks());
     }
 
     @Test
     public void getAllLinksWithNoListReturnsDefaultList() {
-        linkRepository = new LinkRepository();
+        linkRepository = new LinkMemoryRepository();
         List<Link> actual = linkRepository.getAllLinks();
         Assert.assertTrue(actual.isEmpty());
     }
@@ -36,7 +36,7 @@ public class LinkRepositoryTest {
     public void saveLinkWithInitialListAugmentsInitialLink() {
         Link addition = new Link("foo.example.comm", "Some other description");
 
-        linkRepository = new LinkRepository(initialList);
+        linkRepository = new LinkMemoryRepository(initialList);
         linkRepository.saveLink(addition);
 
         List<Link> actual = linkRepository.getAllLinks();
@@ -49,7 +49,7 @@ public class LinkRepositoryTest {
     public void saveLinkWithNoListAguemtnsDefaultList() {
         Link addition = new Link("foo.example.comm", "Some other description");
 
-        linkRepository = new LinkRepository();
+        linkRepository = new LinkMemoryRepository();
         linkRepository.saveLink(addition);
 
         List<Link> actual = linkRepository.getAllLinks();

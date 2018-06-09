@@ -1,6 +1,8 @@
 package com.howtographql.hackernews;
 
 import com.coxautodev.graphql.tools.SchemaParser;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,19 +15,18 @@ import graphql.schema.GraphQLSchema;
 public class GraphQLEndpoint extends SimpleGraphQLServlet {
   private static final long serialVersionUID = 3936594434298527600L;
 
+  private static final ILinkRepository linkRepository;
+
+  static {
+    MongoDatabase mongo = new MongoClient().getDatabase("hackernews");
+    linkRepository = new LinkMongodbRepository(mongo.getCollection("links"));
+  }
+
   public GraphQLEndpoint() {
     super(buildSchema());
   }
 
   private static GraphQLSchema buildSchema() {
-    LinkRepository linkRepository = new LinkRepository(
-      new ArrayList<Link>(
-        Arrays.asList(
-          new Link("http://howtographql.com", "Foo"),
-          new Link("http://graphql.org/learn", "Bar")
-        )
-      )
-    );
     Query query = new Query(linkRepository);
     Mutation mutation = new Mutation(linkRepository);
     

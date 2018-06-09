@@ -3,9 +3,9 @@ package com.howtographql.hackernews;
 import com.coxautodev.graphql.tools.GraphQLRootResolver;
 
 public class Mutation implements GraphQLRootResolver {
-    private final LinkRepository linkRepository;
+    private final ILinkRepository linkRepository;
 
-    public Mutation(LinkRepository linkRepository) {
+    public Mutation(ILinkRepository linkRepository) {
         this.linkRepository = linkRepository;
     }
 
