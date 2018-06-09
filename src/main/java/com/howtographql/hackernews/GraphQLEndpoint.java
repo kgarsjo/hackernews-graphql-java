@@ -4,7 +4,6 @@ import com.coxautodev.graphql.tools.SchemaParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import graphql.servlet.SimpleGraphQLServlet;
