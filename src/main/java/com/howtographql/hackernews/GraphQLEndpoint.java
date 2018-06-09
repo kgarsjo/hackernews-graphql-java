@@ -1,6 +1,11 @@
 package com.howtographql.hackernews;
 
 import com.coxautodev.graphql.tools.SchemaParser;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.annotation.WebServlet;
 import graphql.servlet.SimpleGraphQLServlet;
 import graphql.schema.GraphQLSchema;
@@ -14,7 +19,14 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
   }
 
   private static GraphQLSchema buildSchema() {
-    LinkRepository linkRepository = new LinkRepository();
+    LinkRepository linkRepository = new LinkRepository(
+      new ArrayList<Link>(
+        Arrays.asList(
+          new Link("http://howtographql.com", "Foo"),
+          new Link("http://graphql.org/learn", "Bar")
+        )
+      )
+    );
     Query query = new Query(linkRepository);
     Mutation mutation = new Mutation(linkRepository);
     

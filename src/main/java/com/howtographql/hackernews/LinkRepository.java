@@ -7,9 +7,11 @@ public class LinkRepository {
   private final List<Link> links;
 
   public LinkRepository() {
-    links = new ArrayList<Link>();
-    links.add(new Link("http://howtographql.com", "Foo"));
-    links.add(new Link("http://graphql.org/learn", "Bar"));
+    this(new ArrayList<Link>());
+  }
+
+  public LinkRepository(List<Link> links) {
+    this.links = links;
   }
 
   public List<Link> getAllLinks() {
