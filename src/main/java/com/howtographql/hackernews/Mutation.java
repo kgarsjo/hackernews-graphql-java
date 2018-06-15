@@ -1,5 +1,9 @@
 package com.howtographql.hackernews;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import com.coxautodev.graphql.tools.GraphQLRootResolver;
 
 import graphql.GraphQLException;
@@ -8,10 +12,12 @@ import graphql.schema.DataFetchingEnvironment;
 public class Mutation implements GraphQLRootResolver {
     private final ILinkRepository linkRepository;
     private final IUserRepository userRepository;
+    private final IVoteRepository voteRepository;
 
-    public Mutation(ILinkRepository linkRepository, IUserRepository userRepository) {
+    public Mutation(ILinkRepository linkRepository, IUserRepository userRepository, IVoteRepository voteRepository) {
         this.linkRepository = linkRepository;
         this.userRepository = userRepository;
+        this.voteRepository = voteRepository;
     }
 
     public Link createLink(String url, String description, DataFetchingEnvironment env) {
@@ -25,6 +31,12 @@ public class Mutation implements GraphQLRootResolver {
         User newUser = new User(name, auth.getEmail(), auth.getPassword());
         userRepository.saveUser(newUser);
         return newUser;
+    }
+
+    public Vote createVote(String linkId, String userId) {
+        ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
+        Vote vote = new Vote(now, linkId, userId);
+        return voteRepository.saveVote(vote);
     }
 
     public SigninPayload signinUser(AuthData auth) throws IllegalAccessException {

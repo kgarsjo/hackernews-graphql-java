@@ -13,6 +13,7 @@ type Link {
 type Mutation {
   createLink(url: String!, description: String!): Link
   createUser(name: String!, authProvider: AuthData!): User
+  createVote(linkId: ID, userId: ID): Vote
   signinUser(auth: AuthData): SigninPayload
 }
 
@@ -31,6 +32,15 @@ type User {
   email: String
   password: String
 }
+
+type Vote {
+  id: ID!
+  createdAt: DateTime!
+  link: Link!
+  user: User!
+}
+
+scalar DateTime
 
 schema {
   query: Query

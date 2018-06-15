@@ -4,7 +4,6 @@ import com.coxautodev.graphql.tools.SchemaParser;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import javax.servlet.annotation.WebServlet;
@@ -23,11 +22,13 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
 
   private static final ILinkRepository linkRepository;
   private static final IUserRepository userRepository;
+  private static final IVoteRepository voteRepository;
 
   static {
     MongoDatabase mongo = new MongoClient().getDatabase("hackernews");
     linkRepository = new LinkMongodbRepository(mongo.getCollection("links"));
     userRepository = new UserMongodbRepository(mongo.getCollection("users"));
+    voteRepository = new VoteMongodbRepository(mongo.getCollection("votes"));
   }
 
   public GraphQLEndpoint() {
@@ -47,13 +48,15 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
 
   private static GraphQLSchema buildSchema() {
     Query query = new Query(linkRepository);
-    Mutation mutation = new Mutation(linkRepository, userRepository);
+    Mutation mutation = new Mutation(linkRepository, userRepository, voteRepository);
     LinkResolver linkResolver = new LinkResolver(userRepository);
     SigninResolver signinResolver = new SigninResolver();
+    VoteResolver voteResolver = new VoteResolver(linkRepository, userRepository);
     
     return SchemaParser.newParser()
       .file("schema.graphqls")
-      .resolvers(query, mutation, linkResolver, signinResolver)
+      .resolvers(query, mutation, linkResolver, signinResolver, voteResolver)
+      .scalars(Scalars.dateTime)
       .build()
       .makeExecutableSchema();
   }
