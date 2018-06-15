@@ -4,6 +4,8 @@ public class AuthData {
     private String email;
     private String password;
 
+    public AuthData() {}
+
     public AuthData(String email, String password) {
         this.email = email;
         this.password = password;
@@ -17,13 +19,11 @@ public class AuthData {
         return password;
     }
 
-    public AuthData setEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
-        return this;
     }
 
-    public AuthData setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
-        return this;
     }
 }

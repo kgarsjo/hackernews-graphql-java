@@ -4,15 +4,17 @@ import com.coxautodev.graphql.tools.SchemaParser;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import graphql.servlet.GraphQLContext;
 import graphql.servlet.GraphQLServletListener;
 import graphql.servlet.SimpleGraphQLServlet;
+import graphql.GraphQLException;
 import graphql.schema.GraphQLSchema;
 
 @WebServlet(urlPatterns = "/graphql")
@@ -36,7 +38,7 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
         return new GraphQLServletListener.RequestCallback() {
             @Override
             public void onError(HttpServletRequest request, HttpServletResponse response, Throwable throwable) {
-              java.lang.System.out.print(throwable.toString());
+              throw new GraphQLException(throwable);
             }
         };
     }
@@ -46,11 +48,25 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
   private static GraphQLSchema buildSchema() {
     Query query = new Query(linkRepository);
     Mutation mutation = new Mutation(linkRepository, userRepository);
+    LinkResolver linkResolver = new LinkResolver(userRepository);
+    SigninResolver signinResolver = new SigninResolver();
     
     return SchemaParser.newParser()
       .file("schema.graphqls")
-      .resolvers(query, mutation)
+      .resolvers(query, mutation, linkResolver, signinResolver)
       .build()
       .makeExecutableSchema();
   }
+
+  @Override
+  protected GraphQLContext createContext(Optional<HttpServletRequest> request, Optional<HttpServletResponse> response) {
+    User user = request
+      .map(req -> req.getHeader("Authorization"))
+      .filter(authHeader -> !authHeader.isEmpty())
+      .map(authHeader -> authHeader.replace("Bearer ", ""))
+      .map(token -> userRepository.findById(token))
+      .orElse(null);
+    return new AuthContext(user, request, response);
+  }
+
 }
